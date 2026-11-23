@@ -1,70 +1,54 @@
-# Getting Started with Create React App
+# Employee Management System — Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React UI for the [employee-management-system](https://github.com/2307shukla/employee-management-system)
+backend: login/registration, a searchable employee list, and an add/edit form.
 
-## Available Scripts
+## Live deployment
 
-In the project directory, you can run:
+- **App**: https://ems-frontend-88e9.onrender.com
+- **Backend API**: https://employee-management-system-bwvw.onrender.com
 
-### `npm start`
+## Running locally
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm install
+npm start
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Opens at `http://localhost:3000`. The API base URL is hardcoded in `src/api.js`
+(`API_BASE`) — point it at a locally-running backend if needed.
 
-### `npm test`
+## Auth & roles
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Login and Register are both on the same screen (toggle between them).
+- Self-registration always creates an **EMPLOYEE** (read-only) account — there's no
+  public way to self-assign admin.
+- After login, the JWT and role are stored in `localStorage` (`token`, `role`).
+- **ADMIN** accounts see Add/Edit/Delete controls on the employee list; **EMPLOYEE**
+  accounts see a read-only "View only" list — this mirrors the backend's own
+  role-based access control (an `EMPLOYEE` token gets a real `403` from the API if it
+  tries to write, regardless of what the UI shows).
 
-### `npm run build`
+## How the employee list works
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The backend's `GET /api/employees` is paginated (`PagedModel`: `{content, page}`).
+This app requests a large page size (`?size=1000`, see `src/api.js`) and does its own
+client-side search/filtering over the full result, rather than building server-side
+page-by-page navigation — reasonable for this app's expected scale, not meant to hold
+up at thousands of employees.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Project structure
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| File | Purpose |
+|---|---|
+| `src/App.js` | Top-level: shows `Login` or `EmployeeList` based on whether a token exists |
+| `src/Login.js` | Login/Register form |
+| `src/EmployeeList.js` | Searchable table, role-gated Add/Edit/Delete |
+| `src/EmployeeForm.js` | Add/Edit modal |
+| `src/api.js` | All backend calls (axios, with the JWT attached via an interceptor) |
 
-### `npm run eject`
+## Available scripts
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `npm start` — dev server with hot reload
+- `npm run build` — production build to `build/`
+- `npm test` — CRA's test runner

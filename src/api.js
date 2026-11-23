@@ -24,3 +24,9 @@ export const getEmployee = (id) => api.get(`/api/employees/${id}`);
 export const createEmployee = (data) => api.post('/api/employees', data);
 export const updateEmployee = (id, data) => api.put(`/api/employees/${id}`, data);
 export const deleteEmployee = (id) => api.delete(`/api/employees/${id}`);
+
+export const getDepartments = () => api.get('/api/departments');
+export const createDepartment = (data) => api.post('/api/departments', data);
+
+export const getDesignations = () => api.get('/api/designations');
+export const createDesignation = (data) => api.post('/api/designations', data);

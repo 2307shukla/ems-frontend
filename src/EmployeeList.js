@@ -8,6 +8,8 @@ function EmployeeList({ onLogout }) {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const [search, setSearch] = useState('');
+  const [minSalary, setMinSalary] = useState('');
+  const [maxSalary, setMaxSalary] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const isAdmin = localStorage.getItem('role') === 'ADMIN';
@@ -40,10 +42,13 @@ function EmployeeList({ onLogout }) {
     onLogout();
   };
 
-  const filtered = employees.filter(e =>
-    `${e.firstName} ${e.lastName} ${e.email} ${e.department} ${e.position}`
-      .toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = employees.filter(e => {
+    const matchesText = `${e.employeeCode} ${e.firstName} ${e.lastName} ${e.email} ${e.department?.name || ''} ${e.designation?.title || ''}`
+      .toLowerCase().includes(search.toLowerCase());
+    const matchesMin = minSalary === '' || (e.salary != null && e.salary >= parseFloat(minSalary));
+    const matchesMax = maxSalary === '' || (e.salary != null && e.salary <= parseFloat(maxSalary));
+    return matchesText && matchesMin && matchesMax;
+  });
 
   return (
     <div style={styles.page}>
@@ -58,9 +63,23 @@ function EmployeeList({ onLogout }) {
         <div style={styles.toolbar}>
           <input
             style={styles.search}
-            placeholder="Search employees..."
+            placeholder="Search by name, code, department, designation..."
             value={search}
             onChange={e => setSearch(e.target.value)}
+          />
+          <input
+            style={styles.salaryInput}
+            type="number"
+            placeholder="Min salary"
+            value={minSalary}
+            onChange={e => setMinSalary(e.target.value)}
+          />
+          <input
+            style={styles.salaryInput}
+            type="number"
+            placeholder="Max salary"
+            value={maxSalary}
+            onChange={e => setMaxSalary(e.target.value)}
           />
           {isAdmin && (
             <button style={styles.addBtn} onClick={() => { setEditId(null); setShowForm(true); }}>
@@ -77,15 +96,15 @@ function EmployeeList({ onLogout }) {
           </div>
           <div style={styles.statCard}>
             <div style={styles.statNum}>
-              {[...new Set(employees.map(e => e.department).filter(Boolean))].length}
+              {[...new Set(employees.map(e => e.department?.name).filter(Boolean))].length}
             </div>
             <div style={styles.statLabel}>Departments</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statNum}>
-              {employees.filter(e => e.salary).length}
+              {employees.filter(e => e.status === 'ACTIVE').length}
             </div>
-            <div style={styles.statLabel}>With Salary</div>
+            <div style={styles.statLabel}>Active</div>
           </div>
         </div>
 
@@ -101,10 +120,12 @@ function EmployeeList({ onLogout }) {
             <table style={styles.table}>
               <thead>
                 <tr style={styles.thead}>
+                  <th style={styles.th}>Code</th>
                   <th style={styles.th}>Name</th>
                   <th style={styles.th}>Email</th>
                   <th style={styles.th}>Department</th>
-                  <th style={styles.th}>Position</th>
+                  <th style={styles.th}>Designation</th>
+                  <th style={styles.th}>Status</th>
                   <th style={styles.th}>Salary</th>
                   <th style={styles.th}>Actions</th>
                 </tr>
@@ -112,6 +133,7 @@ function EmployeeList({ onLogout }) {
               <tbody>
                 {filtered.map((emp, i) => (
                   <tr key={emp.id} style={i % 2 === 0 ? styles.trEven : styles.trOdd}>
+                    <td style={styles.td}>{emp.employeeCode || '-'}</td>
                     <td style={styles.td}>
                       <div style={styles.nameCell}>
                         <div style={styles.avatar}>
@@ -122,9 +144,14 @@ function EmployeeList({ onLogout }) {
                     </td>
                     <td style={styles.td}>{emp.email}</td>
                     <td style={styles.td}>
-                      {emp.department && <span style={styles.badge}>{emp.department}</span>}
+                      {emp.department && <span style={styles.badge}>{emp.department.name}</span>}
                     </td>
-                    <td style={styles.td}>{emp.position || '-'}</td>
+                    <td style={styles.td}>{emp.designation?.title || '-'}</td>
+                    <td style={styles.td}>
+                      <span style={emp.status === 'ACTIVE' ? styles.activeBadge : styles.inactiveBadge}>
+                        {emp.status === 'INACTIVE' ? 'Inactive' : 'Active'}
+                      </span>
+                    </td>
                     <td style={styles.td}>
                       {emp.salary ? `₹${emp.salary.toLocaleString()}` : '-'}
                     </td>
@@ -195,6 +222,10 @@ const styles = {
     flex: 1, padding: '10px 14px', border: '1px solid #ddd', borderRadius: '8px',
     fontSize: '14px', outline: 'none'
   },
+  salaryInput: {
+    width: '120px', padding: '10px 14px', border: '1px solid #ddd', borderRadius: '8px',
+    fontSize: '14px', outline: 'none'
+  },
   addBtn: {
     background: '#1a73e8', color: 'white', border: 'none', padding: '10px 20px',
     borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500'
@@ -224,6 +255,14 @@ const styles = {
   },
   badge: {
     background: '#e8f0fe', color: '#1a73e8', padding: '3px 10px',
+    borderRadius: '20px', fontSize: '12px', fontWeight: '500'
+  },
+  activeBadge: {
+    background: '#e6f4ea', color: '#1e7e34', padding: '3px 10px',
+    borderRadius: '20px', fontSize: '12px', fontWeight: '500'
+  },
+  inactiveBadge: {
+    background: '#f5f5f5', color: '#777', padding: '3px 10px',
     borderRadius: '20px', fontSize: '12px', fontWeight: '500'
   },
   editBtn: {
