@@ -13,6 +13,9 @@ api.interceptors.request.use(config => {
 export const login = (username, password) =>
   api.post('/api/auth/login', { username, password });
 
+export const register = (username, password) =>
+  api.post('/api/auth/register', { username, password });
+
 export const getEmployees = () => api.get('/api/employees');
 export const getEmployee = (id) => api.get(`/api/employees/${id}`);
 export const createEmployee = (data) => api.post('/api/employees', data);

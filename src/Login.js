@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { login } from './api';
+import { login, register } from './api';
 
 function Login({ onLogin }) {
+  const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -12,21 +13,30 @@ function Login({ onLogin }) {
     setLoading(true);
     setError('');
     try {
-      const res = await login(username, password);
+      const res = mode === 'login'
+        ? await login(username, password)
+        : await register(username, password);
       localStorage.setItem('token', res.data.token);
       onLogin();
     } catch (err) {
-      setError('Invalid username or password');
+      const serverMessage = Object.values(err.response?.data?.fields || {})[0]
+        || err.response?.data?.error;
+      setError(serverMessage || (mode === 'login' ? 'Invalid username or password' : 'Registration failed'));
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleMode = () => {
+    setMode(mode === 'login' ? 'register' : 'login');
+    setError('');
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Employee Management System</h2>
-        <h3 style={styles.subtitle}>Login</h3>
+        <h3 style={styles.subtitle}>{mode === 'login' ? 'Login' : 'Create an account'}</h3>
         {error && <div style={styles.error}>{error}</div>}
         <form onSubmit={handleSubmit}>
           <div style={styles.field}>
@@ -47,15 +57,20 @@ function Login({ onLogin }) {
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="Enter password"
+              placeholder={mode === 'register' ? 'At least 8 characters' : 'Enter password'}
               required
             />
           </div>
           <button style={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Register')}
           </button>
         </form>
-        <p style={styles.hint}>Default: admin / admin123</p>
+        <p style={styles.hint}>
+          {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+          <span style={styles.link} onClick={toggleMode}>
+            {mode === 'login' ? 'Register' : 'Login'}
+          </span>
+        </p>
       </div>
     </div>
   );
@@ -85,7 +100,8 @@ const styles = {
     border: 'none', borderRadius: '6px', fontSize: '16px', cursor: 'pointer',
     marginTop: '8px'
   },
-  hint: { textAlign: 'center', color: '#888', fontSize: '13px', marginTop: '16px' }
+  hint: { textAlign: 'center', color: '#888', fontSize: '13px', marginTop: '16px' },
+  link: { color: '#1a73e8', cursor: 'pointer', fontWeight: '500' }
 };
 
 export default Login;
