@@ -17,6 +17,7 @@ function Login({ onLogin }) {
         ? await login(username, password)
         : await register(username, password);
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('role', res.data.role);
       onLogin();
     } catch (err) {
       const serverMessage = Object.values(err.response?.data?.fields || {})[0]

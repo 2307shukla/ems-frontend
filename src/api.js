@@ -16,7 +16,10 @@ export const login = (username, password) =>
 export const register = (username, password) =>
   api.post('/api/auth/register', { username, password });
 
-export const getEmployees = () => api.get('/api/employees');
+// The backend now paginates (?page, ?size, ?sort). This app still shows the
+// full list client-side with its own search box, so request a large page
+// instead of rebuilding the UI around server-side paging right now.
+export const getEmployees = () => api.get('/api/employees?size=1000');
 export const getEmployee = (id) => api.get(`/api/employees/${id}`);
 export const createEmployee = (data) => api.post('/api/employees', data);
 export const updateEmployee = (id, data) => api.put(`/api/employees/${id}`, data);

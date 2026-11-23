@@ -10,11 +10,13 @@ function EmployeeList({ onLogout }) {
   const [search, setSearch] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
+  const isAdmin = localStorage.getItem('role') === 'ADMIN';
+
   const fetchEmployees = async () => {
     setLoading(true);
     try {
       const res = await getEmployees();
-      setEmployees(res.data);
+      setEmployees(res.data.content);
     } catch (err) {
       if (err.response?.status === 401) onLogout();
     } finally {
@@ -34,6 +36,7 @@ function EmployeeList({ onLogout }) {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('role');
     onLogout();
   };
 
@@ -59,9 +62,11 @@ function EmployeeList({ onLogout }) {
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-          <button style={styles.addBtn} onClick={() => { setEditId(null); setShowForm(true); }}>
-            + Add Employee
-          </button>
+          {isAdmin && (
+            <button style={styles.addBtn} onClick={() => { setEditId(null); setShowForm(true); }}>
+              + Add Employee
+            </button>
+          )}
         </div>
 
         {/* Stats */}
@@ -124,12 +129,18 @@ function EmployeeList({ onLogout }) {
                       {emp.salary ? `₹${emp.salary.toLocaleString()}` : '-'}
                     </td>
                     <td style={styles.td}>
-                      <button style={styles.editBtn} onClick={() => { setEditId(emp.id); setShowForm(true); }}>
-                        Edit
-                      </button>
-                      <button style={styles.deleteBtn} onClick={() => setDeleteConfirm(emp)}>
-                        Delete
-                      </button>
+                      {isAdmin ? (
+                        <>
+                          <button style={styles.editBtn} onClick={() => { setEditId(emp.id); setShowForm(true); }}>
+                            Edit
+                          </button>
+                          <button style={styles.deleteBtn} onClick={() => setDeleteConfirm(emp)}>
+                            Delete
+                          </button>
+                        </>
+                      ) : (
+                        <span style={{ color: '#aaa', fontSize: '13px' }}>View only</span>
+                      )}
                     </td>
                   </tr>
                 ))}
