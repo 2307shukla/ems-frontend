@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE = 'https://employee-management-system-bwvw.onrender.com';
+// Override locally by creating a .env.local file (never committed) containing:
+//   REACT_APP_API_BASE=http://localhost:8083
+// Restart `npm start` after creating/changing it. Falls back to production.
+const API_BASE = process.env.REACT_APP_API_BASE || 'https://employee-management-system-bwvw.onrender.com';
 
 const api = axios.create({ baseURL: API_BASE });
 
