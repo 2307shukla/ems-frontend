@@ -13,8 +13,8 @@ api.interceptors.request.use(config => {
 export const login = (username, password) =>
   api.post('/api/auth/login', { username, password });
 
-export const register = (username, password) =>
-  api.post('/api/auth/register', { username, password });
+export const register = (username, password, employeeCode) =>
+  api.post('/api/auth/register', { username, password, employeeCode: employeeCode || undefined });
 
 // The backend now paginates (?page, ?size, ?sort). This app still shows the
 // full list client-side with its own search box, so request a large page
@@ -30,3 +30,19 @@ export const createDepartment = (data) => api.post('/api/departments', data);
 
 export const getDesignations = () => api.get('/api/designations');
 export const createDesignation = (data) => api.post('/api/designations', data);
+
+export const checkIn = () => api.post('/api/attendance/check-in');
+export const checkOut = () => api.post('/api/attendance/check-out');
+export const getMyAttendance = () => api.get('/api/attendance/me?size=1000');
+export const getAllAttendance = () => api.get('/api/attendance?size=1000');
+
+export const submitLeaveRequest = (data) => api.post('/api/leave-requests', data);
+export const getMyLeaveRequests = () => api.get('/api/leave-requests/me?size=1000');
+export const getAllLeaveRequests = () => api.get('/api/leave-requests?size=1000');
+export const approveLeaveRequest = (id) => api.put(`/api/leave-requests/${id}/approve`);
+export const rejectLeaveRequest = (id) => api.put(`/api/leave-requests/${id}/reject`);
+
+export const getDashboardStats = () => api.get('/api/dashboard');
+
+export const getUsers = () => api.get('/api/users');
+export const updateUserRole = (id, role) => api.put(`/api/users/${id}/role`, { role });

@@ -12,7 +12,8 @@ function EmployeeList({ onLogout }) {
   const [maxSalary, setMaxSalary] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
-  const isAdmin = localStorage.getItem('role') === 'ADMIN';
+  const role = localStorage.getItem('role');
+  const canManage = role === 'ADMIN' || role === 'HR';
 
   const fetchEmployees = async () => {
     setLoading(true);
@@ -26,7 +27,7 @@ function EmployeeList({ onLogout }) {
     }
   };
 
-  useEffect(() => { fetchEmployees(); }, []);
+  useEffect(() => { fetchEmployees(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDelete = async (id) => {
     try {
@@ -34,12 +35,6 @@ function EmployeeList({ onLogout }) {
       setDeleteConfirm(null);
       fetchEmployees();
     } catch (err) {}
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    onLogout();
   };
 
   const filtered = employees.filter(e => {
@@ -51,13 +46,7 @@ function EmployeeList({ onLogout }) {
   });
 
   return (
-    <div style={styles.page}>
-      {/* Header */}
-      <div style={styles.header}>
-        <h1 style={styles.headerTitle}>Employee Management System</h1>
-        <button style={styles.logoutBtn} onClick={handleLogout}>Logout</button>
-      </div>
-
+    <div>
       {/* Main content */}
       <div style={styles.content}>
         <div style={styles.toolbar}>
@@ -81,7 +70,7 @@ function EmployeeList({ onLogout }) {
             value={maxSalary}
             onChange={e => setMaxSalary(e.target.value)}
           />
-          {isAdmin && (
+          {canManage && (
             <button style={styles.addBtn} onClick={() => { setEditId(null); setShowForm(true); }}>
               + Add Employee
             </button>
@@ -156,7 +145,7 @@ function EmployeeList({ onLogout }) {
                       {emp.salary ? `₹${emp.salary.toLocaleString()}` : '-'}
                     </td>
                     <td style={styles.td}>
-                      {isAdmin ? (
+                      {canManage ? (
                         <>
                           <button style={styles.editBtn} onClick={() => { setEditId(emp.id); setShowForm(true); }}>
                             Edit

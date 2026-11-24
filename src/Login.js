@@ -5,6 +5,7 @@ function Login({ onLogin }) {
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [employeeCode, setEmployeeCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -15,7 +16,7 @@ function Login({ onLogin }) {
     try {
       const res = mode === 'login'
         ? await login(username, password)
-        : await register(username, password);
+        : await register(username, password, employeeCode);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('role', res.data.role);
       onLogin();
@@ -62,6 +63,18 @@ function Login({ onLogin }) {
               required
             />
           </div>
+          {mode === 'register' && (
+            <div style={styles.field}>
+              <label style={styles.label}>Employee Code (optional)</label>
+              <input
+                style={styles.input}
+                type="text"
+                value={employeeCode}
+                onChange={e => setEmployeeCode(e.target.value)}
+                placeholder="e.g. EMP-001, if HR already added you"
+              />
+            </div>
+          )}
           <button style={styles.button} type="submit" disabled={loading}>
             {loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Register')}
           </button>

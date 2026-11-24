@@ -56,6 +56,7 @@ function EmployeeForm({ employeeId, onSave, onCancel }) {
         dob: form.dob || null,
         joiningDate: form.joiningDate || null,
         gender: form.gender || null,
+        mobileNo: form.mobileNo || null,
       };
       if (employeeId) await updateEmployee(employeeId, data);
       else await createEmployee(data);
