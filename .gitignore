@@ -21,3 +21,15 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Real settings stay local; .env.example lists them
+.env
+.env.*
+!.env.example
+
+# Secrets and keys: never commit them
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
