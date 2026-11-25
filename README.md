@@ -3,6 +3,13 @@
 A React UI for the [employee-management-system](https://github.com/2307shukla/employee-management-system)
 backend: login/registration, a searchable employee list, and an add/edit form.
 
+## At a glance
+
+- Sign in or register on one screen.
+- Searchable employee list; administrators can add, edit and delete, employees get a read-only view.
+- Built with React and talks to the Employee Management System API.
+- Free to run: deployed on a free hosting tier.
+
 ## Live deployment
 
 - **App**: https://ems-frontend-88e9.onrender.com
