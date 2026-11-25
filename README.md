@@ -7,7 +7,7 @@ backend: login/registration, a searchable employee list, and an add/edit form.
 
 - Sign in or register on one screen.
 - Searchable employee list; administrators can add, edit and delete, employees get a read-only view.
-- Built with React and talks to the Employee Management System API.
+- Built with React and Vite, and talks to the Employee Management System API.
 - Free to run: deployed on a free hosting tier.
 
 ## Live deployment
@@ -17,13 +17,16 @@ backend: login/registration, a searchable employee list, and an add/edit form.
 
 ## Running locally
 
+Needs Node.js 20.19 or newer (Node 22 recommended).
+
 ```bash
 npm install
-npm start
+npm run dev
 ```
 
-Opens at `http://localhost:3000`. The API base URL is hardcoded in `src/api.js`
-(`API_BASE`) — point it at a locally-running backend if needed.
+Opens at `http://localhost:3000` and uses the live backend API by default. To use a
+locally running backend instead, copy `.env.example` to `.env.local` and set
+`REACT_APP_API_BASE` (for example `http://localhost:8083`), then restart `npm run dev`.
 
 ## Auth & roles
 
@@ -48,14 +51,18 @@ up at thousands of employees.
 
 | File | Purpose |
 |---|---|
-| `src/App.js` | Top-level: shows `Login` or `EmployeeList` based on whether a token exists |
-| `src/Login.js` | Login/Register form |
-| `src/EmployeeList.js` | Searchable table, role-gated Add/Edit/Delete |
-| `src/EmployeeForm.js` | Add/Edit modal |
+| `src/App.jsx` | Top-level: shows `Login` or the signed-in app (employees, attendance, leave, dashboard, users) |
+| `src/Login.jsx` | Login/Register form |
+| `src/EmployeeList.jsx` | Searchable table, role-gated Add/Edit/Delete |
+| `src/EmployeeForm.jsx` | Add/Edit modal |
 | `src/api.js` | All backend calls (axios, with the JWT attached via an interceptor) |
+| `vite.config.js` | Vite build and Vitest test settings |
 
 ## Available scripts
 
-- `npm start` — dev server with hot reload
-- `npm run build` — production build to `build/`
-- `npm test` — CRA's test runner
+- `npm run dev` (or `npm start`): dev server with hot reload on port 3000
+- `npm run build`: production build to `dist/`
+- `npm run preview`: serve the production build locally
+- `npm test`: run the tests once with Vitest
+
+The Docker image builds with Node 22 and serves `dist/` with nginx.
